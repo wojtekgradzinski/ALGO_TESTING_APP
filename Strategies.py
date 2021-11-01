@@ -364,19 +364,19 @@ class MLBacktester():
         '''
         self.data_subset = self.split_data(start, end)
         self.feature_columns = []
-        for lag in range(1, self.lags + 1):
+        for lag in range(1, self.features + 1):
             col = "lag{}".format(lag)
             self.data_subset[col] = self.data_subset["returns"].shift(lag)
             self.feature_columns.append(col)
         self.data_subset.dropna(inplace=True)
         
     def fit_model(self, start, end):
-        ''' Fitting the ML Model.
+        ''' Fitting the ML Model
         '''
         self.prepare_features(start, end)
         self.model.fit(self.data_subset[self.feature_columns], np.sign(self.data_subset["returns"]))
         
-    def test_strategy(self, train_ratio = 0.7, lags = 5):
+    def test_strategy(self, train_ratio = 0.7, features = 5):
         ''' 
         Backtests the ML-based strategy.
         
@@ -384,10 +384,10 @@ class MLBacktester():
         ----------
         train_ratio: float (between 0 and 1.0 excl.)
             Splitting the dataset into training set (train_ratio) and test set (1 - train_ratio).
-        lags: int
-            number of lags serving as model features.
+        features: int
+            number of features serving as model features.
         '''
-        self.lags = lags
+        self.features = features
                   
         # determining datetime for start, end and split (for training an testing period)
         full_data = self.data.copy()
@@ -423,7 +423,7 @@ class MLBacktester():
         perf = self.results["cstrategy"].iloc[-1] # absolute performance of the strategy
         outperf = perf - self.results["creturns"].iloc[-1] # out-/underperformance of strategy
         
-        return round(perf, 6), round(outperf, 6)
+        return round(perf, 4), round(outperf, 4)
         
     def plot_results(self):
         ''' Plots the performance of the trading strategy and compares to "buy and hold".

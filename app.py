@@ -74,7 +74,7 @@ if uploaded_file is not None:
     
       
     #Choose strategy and backtest!
-    tc = float(st.sidebar.text_input("Transaction cost", 0.000075))
+    tc = float(st.sidebar.text_input("Transaction cost", 0.0002))
     st.sidebar.header("STRATEGY BACKTESTER") 
     backtest_init = st.sidebar.checkbox('Run Backtest')
     backtest_options = ["BACK TO MEAN","SMA CROSSOVER"] 
