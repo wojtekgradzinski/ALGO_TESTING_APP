@@ -7,11 +7,10 @@ from PIL import Image
 import requests
 from io import BytesIO
 from datetime import date
-import Strategies as S
+import Models as M
 import matplotlib.pyplot 
 import financials
 import base64 
-#from yahoofinancials import YahooFinancials
 
 
 #Insertig picture
@@ -47,11 +46,11 @@ uploaded_file = st.file_uploader("CHOOSE YOUR FILE")
 if uploaded_file is not None:
     df = pd.read_csv(uploaded_file, parse_dates = {'Datetime': ['Date', 'Time']}, index_col = 'Datetime')
     st.write(df)
-    
+    st.sidebar.header("CHOOSE YOUR MARKET")  
     symbol = st.sidebar.selectbox(label="FOREX & Crypto & CFDs", options=["AUDJPY", "AUDUSD", "EURCHF", "EURGBP", "EURJPY", "EURUSD", "GBPUSD", "NZDUSD", 
                 "USDCAD","USDCHF","USDJPY","SILVER","GOLD","NAS","DAX","CAC","FTSE", "DOW","BTC","LTC","ETH"])    
     
-    st.sidebar.header("CHOOSE YOUR MARKET")   
+     
     #SELECT data period
     
     start = st.sidebar.date_input(
@@ -74,17 +73,17 @@ if uploaded_file is not None:
     
       
     #Choose strategy and backtest!
-    tc = float(st.sidebar.text_input("Transaction cost", 0.0002))
-    st.sidebar.header("STRATEGY BACKTESTER") 
-    backtest_init = st.sidebar.checkbox('Run Backtest')
-    backtest_options = ["BACK TO MEAN","SMA CROSSOVER"] 
-    backtest_options = st.sidebar.selectbox("Strategies", backtest_options)
+    tc = float(st.sidebar.text_input("Transaction cost", 0.0001))
+    st.sidebar.header("MODEL BACKTESTER") 
+    backtest_init = st.sidebar.checkbox('Run Backtester')
+    backtest_options = ["BACK TO MEAN","SMA CROSSOVER", "LOGISTIC REGRESSION"] 
+    backtest_options = st.sidebar.selectbox("Select model", backtest_options)
     
     
     if backtest_options == "BACK TO MEAN":
         SMA = int(st.sidebar.text_input("Moving Average (SMA)",150))
         dev = int(st.sidebar.text_input('Standard Deviation',2))
-        back_to_mean = S.MeanRevBacktester(symbol, SMA, dev, start, end, tc, df)
+        back_to_mean = M.MeanRevBacktester(symbol, SMA, dev, start, end, tc, df)
         if backtest_init == True:  
             back_to_mean.test_strategy()
             st.write(back_to_mean.results_overview)
@@ -93,14 +92,23 @@ if uploaded_file is not None:
     if backtest_options == "SMA CROSSOVER":
         SMA_FAST = int(st.sidebar.text_input("Moving Average (FAST)",50))
         SMA_SLOW = int(st.sidebar.text_input("Moving Average (SLOW)",150))
-        SMA_crossover = S.SMABacktester(symbol, SMA_FAST, SMA_SLOW, start, end,tc, df)
+        SMA_crossover = M.SMABacktester(symbol, SMA_FAST, SMA_SLOW, start, end, tc, df)
         if backtest_init == True:     
             SMA_crossover.test_strategy()
             st.write(SMA_crossover.results_overview)
-            st.pyplot(SMA_crossover.plot_results())    
+            st.pyplot(SMA_crossover.plot_results())
+            
+    if backtest_options == "LOGISTIC REGRESSION":
+        train_ratio =   float(st.sidebar.text_input('Train data',0.8))
+        features =   int(st.sidebar.text_input('Number of features',5)) 
+        Logistic_reg = M.MLBacktester(symbol, start, end, tc, df, train_ratio)
+        Logistic_reg.test_strategy(train_ratio, features)
+        st.write(Logistic_reg.results_overview)
+        st.pyplot(Logistic_reg.plot_results()) 
+               
 
     #Strategy optimization 
-    st.sidebar.header("STRATEGY OPTIMIZER") 
+    st.sidebar.header("MODEL OPTIMIZER") 
     optimization = st.sidebar.checkbox('Run Optimizer')
     
     if backtest_options == "BACK TO MEAN":
@@ -123,3 +131,10 @@ if uploaded_file is not None:
             SMA_crossover.optimize_parameters((SMA_fast_s,SMA_fast_e),(SMA_slow_s,SMA_fast_e ))
             st.write(SMA_crossover.results_overview)
             st.pyplot(SMA_crossover.plot_results()) 
+            
+    if backtest_options == "LOGISTIC REGRESSION":
+        features_opt =   int(st.sidebar.text_input('Opt features',10))
+        if optimization == True:
+            for feature in range(1, features_opt):
+                st.write(print(feature, Logistic_reg.test_strategy(train_ratio , features_opt))) 
+                    
