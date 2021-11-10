@@ -1,4 +1,6 @@
 import numpy as np
+import pandas as pd
+
 
 def plot_chart(symbol, start, end, df):
     raw = df  
@@ -9,7 +11,7 @@ def plot_chart(symbol, start, end, df):
     data = raw
 
     title = "{} | Start = {} | End = {}".format(symbol , start, end)
-    data['price'].plot(title=title, figsize= (12,8), )  
+    data['price'].plot(title=title,  figsize=(10,6))
     
     
 def performance_metrics(symbol, start, end, df):
