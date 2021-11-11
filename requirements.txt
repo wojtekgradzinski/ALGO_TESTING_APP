@@ -3,9 +3,7 @@ gunicorn==20.1.0
 Jinja2==3.0.2
 joblib==1.0.1
 matplotlib==3.4.3
-pytz==2021.3
-requests==2.26.0
-scikit-image==0.18.3
-scikit-learn==0.24.2
 streamlit==1.1.0
 keras==2.2.4
+tensorflow==2.2.0
+scikit-learn==0.24.2
