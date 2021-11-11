@@ -9,7 +9,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from itertools import product
-import keras
+# import keras
 pd.set_option('display.float_format', lambda x: '%.2f' % x)
 from DNNModel import *
 from scipy.optimize import brute

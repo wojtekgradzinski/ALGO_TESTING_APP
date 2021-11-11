@@ -116,14 +116,14 @@ if uploaded_file is not None:
             st.write(RSI_MODEL.results_overview)   
             st.pyplot(RSI_MODEL.plot_results())
     
-    if backtest_options == "DNN_PHANTOM":
-        train_ratio =   float(st.sidebar.text_input('Train Data',0.8))
-        lags =   int(st.sidebar.text_input('Lags',3)) 
-        DNN_PHANTOM = M.DNNBacktester(symbol, start, end, tc, df, train_ratio)
-        if backtest_init == True:     
-            DNN_PHANTOM.test_strategy(lags)
-            st.write(DNN_PHANTOM.results_overview)
-            st.pyplot(DNN_PHANTOM.plot_results(lags))                   
+    # if backtest_options == "DNN_PHANTOM":
+    #     train_ratio =   float(st.sidebar.text_input('Train Data',0.8))
+    #     lags =   int(st.sidebar.text_input('Lags',3)) 
+    #     DNN_PHANTOM = M.DNNBacktester(symbol, start, end, tc, df, train_ratio)
+    #     if backtest_init == True:     
+    #         DNN_PHANTOM.test_strategy(lags)
+    #         st.write(DNN_PHANTOM.results_overview)
+    #         st.pyplot(DNN_PHANTOM.plot_results(lags))                   
                
 
     #Strategy optimization 
