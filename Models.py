@@ -13,7 +13,7 @@ import keras
 pd.set_option('display.float_format', lambda x: '%.2f' % x)
 from DNNModel import *
 from scipy.optimize import brute
-from empyrical import max_drawdown
+
 plt.style.use("dark_background")
 
 
@@ -151,16 +151,9 @@ class MeanRevBacktester():
         td_year = self.results.strategy.count() / ((self.results.strategy.index[-1] - self.results.strategy.index[0]).days / 365)
         Msharpe = self.results.strategy.mean() / self.results.strategy.std() * np.sqrt(td_year)
         BHsharpe = self.results.returns.mean() / self.results.returns.std() * np.sqrt(td_year)
-        Strategy_cummax = self.results["cstrategy"].cummax()
-        BHcummax = self.results['buy&hold'].cummax()
-        Sharpe_ratios = pd.DataFrame(data = [[Msharpe,BHsharpe]], columns= ['Model Sharpe', 'Buy&Hold Sharpe '])
-        Sharpe_ratios["Model Max DD%"] = -(self.results["cstrategy"] - Strategy_cummax) / Strategy_cummax
-        Sharpe_ratios["B&H Max DD%"] = -(self.results["buy&hold"] - BHcummax) / BHcummax
-            
         
-        #Calcuating DD for the Model
+        Sharpe_ratios = pd.DataFrame(data = [[Msharpe,BHsharpe]], columns= ['Model Sharpe', 'Buy & Hold Sharpe '])
         
-            
         return Sharpe_ratios
     
     
@@ -209,7 +202,7 @@ class MeanRevBacktester():
         #Calcuating Sharpe for the Model
         td_year = self.results.strategy.count() / ((self.results.strategy.index[-1] - self.results.strategy.index[0]).days / 365)
         many_results["Model Sharpe"] = self.results.strategy.mean() / self.results.strategy.std() * np.sqrt(td_year)
-        many_results["Buy&Hold Sharpe"] = self.results.returns.mean() / self.results.returns.std() * np.sqrt(td_year)
+        
 
         self.results_overview = many_results.nlargest(1,"Model Perf%").round(2)
                             
@@ -361,7 +354,7 @@ class SMABacktester():
         
         td_year = self.results.strategy.count() / ((self.results.strategy.index[-1] - self.results.strategy.index[0]).days / 365)
         many_results["Model Sharpe"] = self.results.strategy.mean() / self.results.strategy.std() * np.sqrt(td_year)
-        many_results["Buy&Hold Sharpe"] = self.results.returns.mean() / self.results.returns.std() * np.sqrt(td_year)
+        
         
         
         self.results_overview = many_results.nlargest(1,"Model Perf%").round(2)
@@ -538,7 +531,7 @@ class MLBacktester():
         #Calcuating Sharpe for the Model
         td_year = self.data_subset.strategy.count() / ((self.data_subset.strategy.index[-1] - self.data_subset.strategy.index[0]).days / 365)
         many_results["Model Sharpe"] = self.data_subset.strategy.mean() / self.data_subset.strategy.std() * np.sqrt(td_year)
-        many_results["Buy&Hold Sharpe"] = self.data_subset.returns.mean() / self.data_subset.returns.std() * np.sqrt(td_year)
+        
         
         
         self.results_overview = many_results.nlargest(1,"Model Perf%").round(2)
@@ -673,7 +666,7 @@ class RSIBacktester():
         
         many_results =  pd.DataFrame(data = [[perf_percent, outperf_percent]], columns = ["Model Perf%", "Model Out/Under Perf %"])
         td_year = data.strategy.count() / ((data.index[-1] - data.index[0]).days / 365)
-        many_results["Strategy Sharpe"] = data.strategy.mean() / data.strategy.std() * np.sqrt(td_year)
+        many_results["Model Sharpe"] = data.strategy.mean() / data.strategy.std() * np.sqrt(td_year)
         many_results["Buy&hold Sharpe"] = data.returns.mean() / data.returns.std() * np.sqrt(td_year)
         
         self.results_overview = many_results
@@ -719,9 +712,8 @@ class RSIBacktester():
         
         many_results_opt = pd.DataFrame(data = [opt], columns = ["RSI Time Period", "RSI_upper", "RSI_lower"])
         
-        td_year = self.results.strategy.count() / ((self.results.index[-1] - self.results.index[0]).days / 365)
-        many_results_opt["Model Sharpe"] = self.results.strategy.mean() / self.results.strategy.std() * np.sqrt(td_year)
-        many_results_opt["Buy&Hold Sharpe"] = self.results.returns.mean() / self.results.returns.std() * np.sqrt(td_year)
+        
+        
         
         self.results_opt = many_results_opt
         
@@ -864,7 +856,7 @@ class DNNBacktester():
         many_results["Model Sharpe"] = test.strategy.mean() / test.strategy.std() * np.sqrt(td_year)
         many_results["Buy&Hold Sharpe"] = test.returns.mean() / test.returns.std() * np.sqrt(td_year)
         
-        self.results_overview = many_results.nlargest(1,"PERF %")
+        self.results_overview = many_results.nlargest(1,"Model Perf%")
         
         
         return round(perf, 4), round(outperf, 4)

@@ -99,7 +99,7 @@ if uploaded_file is not None:
             
     if backtest_options == "LOG REGRESSION":
         train_ratio =   float(st.sidebar.text_input('Train Data',0.8))
-        lags =   int(st.sidebar.text_input('Lags',5)) 
+        lags =   int(st.sidebar.text_input('Lags',3)) 
         ML = M.MLBacktester(symbol, start, end, tc, df, train_ratio)
         if backtest_init == True: 
             ML.test_strategy(train_ratio, lags)
@@ -118,7 +118,7 @@ if uploaded_file is not None:
     
     if backtest_options == "DNN_PHANTOM":
         train_ratio =   float(st.sidebar.text_input('Train Data',0.8))
-        lags =   int(st.sidebar.text_input('Lags',5)) 
+        lags =   int(st.sidebar.text_input('Lags',3)) 
         DNN_PHANTOM = M.DNNBacktester(symbol, start, end, tc, df, train_ratio)
         if backtest_init == True:     
             DNN_PHANTOM.test_strategy(lags)
