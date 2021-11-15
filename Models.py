@@ -9,7 +9,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from itertools import product
-# import keras
+import keras
 pd.set_option('display.float_format', lambda x: '%.2f' % x)
 from DNNModel import *
 from scipy.optimize import brute
@@ -200,8 +200,8 @@ class MeanRevBacktester():
         many_results["Model Perf%"] = (many_results["Model Perf%"] -1) * 100
         
         #Calcuating Sharpe for the Model
-        td_year = self.results.strategy.count() / ((self.results.strategy.index[-1] - self.results.strategy.index[0]).days / 365)
-        many_results["Model Sharpe"] = self.results.strategy.mean() / self.results.strategy.std() * np.sqrt(td_year)
+        # td_year = self.results.strategy.count() / ((self.results.strategy.index[-1] - self.results.strategy.index[0]).days / 365)
+        # many_results["Model Sharpe"] = self.results.strategy.mean() / self.results.strategy.std() * np.sqrt(td_year)
         
 
         self.results_overview = many_results.nlargest(1,"Model Perf%").round(2)
@@ -516,17 +516,17 @@ class MLBacktester():
         if self.results is None:
             print("Run test_strategy() first.")
         else:
-            title = "Logistic Regression: {} | TC = {} | LAGS = {}".format(self.symbol, self.tc, features)
+            title = "Logistic Regression: {} | TC = {} | Features = {}".format(self.symbol, self.tc, features)
             self.results[["buy&hold", "cstrategy"]].plot(title=title, figsize=(12, 8))
     
-    def optimize_features(self, lags):
+    def optimize_features(self, lag):
         results = []
-        for feature in range(1, lags):
-            results.append(self.test_strategy(train_ratio = 0.8, lags = feature))
+        for f in range(1, lag + 1):
+            results.append(self.test_strategy(train_ratio = 0.8, lags = lag))
         best_perf = np.max(results)
         perf_percent = round((best_perf - 1) * 100, 2)
         opt = results.index(max(results))
-        many_results =  pd.DataFrame([[perf_percent, opt]], columns = ["Model Perf%", "Lags"])
+        many_results =  pd.DataFrame([[perf_percent, opt]], columns = ["Model Perf%", "Features"])
         
         #Calcuating Sharpe for the Model
         td_year = self.data_subset.strategy.count() / ((self.data_subset.strategy.index[-1] - self.data_subset.strategy.index[0]).days / 365)
@@ -540,7 +540,7 @@ class MLBacktester():
     
     
     def plot_results_opt(self):
-        title = "Logistic Regression: {} | TC = {} | LAGS = {}".format(self.symbol, self.tc, self.opt)
+        title = "Logistic Regression: {} | TC = {} | Features = {}".format(self.symbol, self.tc, self.opt)
         self.results[["buy&hold", "cstrategy"]].plot(title=title, figsize=(12, 8))     
             
        
@@ -823,8 +823,8 @@ class DNNBacktester():
         
         # calculate Strategy Returns
         test["strategy"] = test["pred"] * test["returns"]
-        test['position'] =np.where(test.pred < 0.47, -1, np.nan)   #simply short when probability is less than 0.47
-        test['position'] =np.where(test.pred > 0.53, 1, test.position)   #simply buy when probability is more than 0.53
+        test['position'] =np.where(test.pred < 0.45, -1, np.nan)   #simply short when probability is less than 0.47
+        test['position'] =np.where(test.pred > 0.55, 1, test.position)   #simply buy when probability is more than 0.53
         
         #time-varying position
         test.index = pd.to_datetime(test.index)
@@ -885,7 +885,7 @@ class DNNBacktester():
     
     
     def plot_results_opt(self):
-        title = "Logistic Regression: {} | TC = {} | LAGS = {}".format(self.symbol, self.tc, self.opt)
+        title = "Logistic Regression: {} | TC = {} | Features = {}".format(self.symbol, self.tc, self.opt)
         self.results[["buy&hold", "cstrategy"]].plot(title=title, figsize=(12, 8))  
         
     
